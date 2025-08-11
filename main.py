@@ -62,9 +62,8 @@ def main():
     ctx = Context(renderer.pygameSurface, v2(*SCREENSIZE), v2(0, 0), 5)
 
     # simulation
-    pend = simulation.pendulum(0, (0, 0.4), (0, 0), (0, 0))
+    pend = simulation.pendulum2(0, (0.2, 0.4), (0, 0), (0, 0))
     pend.setParams()
-    pend.run(10, 1 / 60)
 
     # mainloop
     running = True
@@ -82,34 +81,25 @@ def main():
         imgui.new_frame()
         imgui.begin("Test window")
         imgui.text("heehheee")
-        changed = [False for _ in range(7)]
-        new_h_Q = [0, 0]
-        new_h_dQ = [0, 0]
-        changed[0], new_h_Q[0] = imgui.slider_float("x_0", pend.h_Q[0][0], -2.0, 2.0)
-        changed[1], new_h_dQ[0] = imgui.slider_float("dx_0", pend.h_dQ[0][0], -1.0, 1.0)
-        changed[2], new_h_Q[1] = imgui.slider_float("theta_0", pend.h_Q[0][1], -pi, pi)
-        changed[3], new_h_dQ[1] = imgui.slider_float("dtheta_0", pend.h_dQ[0][1], -2 * pi, 2 * pi)
-        pend.h_Q[0] = tuple(new_h_Q)
-        pend.h_dQ[0] = tuple(new_h_dQ)
-        changed[4], pend.m = imgui.slider_float("m", pend.m, 0.0, 10.0)
-        changed[5], pend.M = imgui.slider_float("M", pend.M, 0.0, 10.0)
-        changed[6], pend.l = imgui.slider_float("l", pend.l, 0.01, 2.0)
+        changed = pend.guiEditables()
         imgui.end()
 
-        if any(changed):
+        if changed:
             pend.resetSim()
-            pend.run(10, 1 / 60)
+            #pend.run(20, 1 / 120)
             i = 0
 
         # do pygame stuff
         renderer.pygameSurface.fill(BG_COLOUR)
+        pend.update(1 / 60)
         pend.displayFrame(ctx, pend.h_Q[i], pend.h_dQ[i], pend.h_d2Q[i])
 
         renderer.TransferToOpenglTexture()
         renderer.RenderImgui()
 
         i += 1
-        i %= len(pend.h_T)
+        #i += 2
+        #i %= len(pend.h_T)
 
     renderer.impl.shutdown()
     pg.quit()
