@@ -17,6 +17,16 @@ class Sim:
         self.h_dQ = [d_q0]
         self.h_d2Q = [d2_q0]
 
+    def resetSim(self):
+        self.t = self.h_T[0]
+        self.q = self.h_Q[0]
+        self.d_q = self.h_dQ[0]
+        self.d2_q = self.h_d2Q[0]
+        self.h_T = [self.t]
+        self.h_Q = [self.q]
+        self.h_dQ = [self.d_q]
+        self.h_d2Q = [self.d2_q]
+
     def setd2s(self):
         raise NotImplementedError()
     
