@@ -43,12 +43,12 @@ SCREENSIZE = (1200, 800)
 FPS = 60
 BG_COLOUR = (30, 30, 30)
 
-def main():
+def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2(0, 0), worldDiameter: float = 5):
 
     # initialisation
     pg.init()
     screen = pg.display.set_mode(SCREENSIZE, pg.DOUBLEBUF | pg.OPENGL)
-    pg.display.set_caption("Physics")
+    pg.display.set_caption(caption)
     clock = pg.time.Clock()
 
     # OpenGL/Imgui setup
@@ -59,11 +59,11 @@ def main():
     io.display_size = SCREENSIZE
 
     # rendering context
-    ctx = Context(renderer.pygameSurface, v2(*SCREENSIZE), v2(0, 0), 5)
+    ctx = Context(renderer.pygameSurface, v2(*SCREENSIZE), worldCentre, worldDiameter)
 
     # simulation
-    pend = simulation.pendulum2(0, (0.2, 0.4), (0, 0), (0, 0))
-    pend.setParams()
+    #pend = simulation.pendulum2(0, (0.2, 0.4), (0, 0), (0, 0))
+    sim.setParams()
 
     # mainloop
     running = True
@@ -81,18 +81,18 @@ def main():
         imgui.new_frame()
         imgui.begin("Test window")
         imgui.text("heehheee")
-        changed = pend.guiEditables()
+        changed = sim.guiEditables()
         imgui.end()
 
         if changed:
-            pend.resetSim()
+            sim.resetSim()
             #pend.run(20, 1 / 120)
             i = 0
 
         # do pygame stuff
         renderer.pygameSurface.fill(BG_COLOUR)
-        pend.update(1 / 60)
-        pend.displayFrame(ctx, pend.h_Q[i], pend.h_dQ[i], pend.h_d2Q[i])
+        sim.update(1 / 60)
+        sim.displayFrame(ctx, sim.h_Q[i], sim.h_dQ[i], sim.h_d2Q[i])
 
         renderer.TransferToOpenglTexture()
         renderer.RenderImgui()
@@ -106,4 +106,4 @@ def main():
     sys.exit()
 
 if __name__ == "__main__":
-    main()
+    simulate(simulation.pendulum(0, (0, 0.4), (0, 0), (0, 0)))

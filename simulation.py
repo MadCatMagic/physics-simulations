@@ -29,6 +29,9 @@ class Sim:
         self.h_dQ = [self.d_q]
         self.h_d2Q = [self.d2_q]
 
+    def setParams(self):
+        raise NotImplementedError()
+
     def setd2s(self):
         raise NotImplementedError()
     
