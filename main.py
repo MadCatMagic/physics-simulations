@@ -1,33 +1,4 @@
 
-"""
-C = 6.67e-11 * 1.99e30
-
-alpha = []
-omega = [(C / (1.5e11 ** 3)) ** 0.5 * 1.3]
-theta = [0]
-
-ddr = []
-dr = [1e4]
-r = [1.5e11]
-
-dt = 5000
-
-for i in range(500000):
-    alpha.append(-2 * omega[-1] * dr[-1] / r[-1])
-    ddr.append(omega[-1] * omega[-1] * r[-1] - C / (r[-1] * r[-1]))
-
-    omega.append(omega[-1] + alpha[-1] * dt)
-    theta.append(theta[-1] + omega[-1] * dt)
-    dr.append(dr[-1] + ddr[-1] * dt)
-    r.append(r[-1] + dr[-1] * dt)
-
-import matplotlib.pyplot as plt
-from math import sin, cos
-
-x, y = [R * cos(T) for R, T in zip(r, theta)], [R * sin(T) for R, T in zip(r, theta)]
-plt.plot(x, y)
-plt.plot(0, 0, 'ro')
-plt.show()"""
 
 import imgui.core as imgui
 import pygame as pg
@@ -43,7 +14,7 @@ SCREENSIZE = (1200, 800)
 FPS = 60
 BG_COLOUR = (30, 30, 30)
 
-def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2(0, 0), worldDiameter: float = 5):
+def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2(0, 0), worldDiameter: float = 5, timestep: float = 1 / 60):
 
     # initialisation
     pg.init()
@@ -91,7 +62,7 @@ def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2
 
         # do pygame stuff
         renderer.pygameSurface.fill(BG_COLOUR)
-        sim.update(1 / 60)
+        sim.update(timestep)
         sim.displayFrame(ctx, sim.h_Q[i], sim.h_dQ[i], sim.h_d2Q[i])
 
         renderer.TransferToOpenglTexture()
