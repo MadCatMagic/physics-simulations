@@ -3,16 +3,19 @@ from math import sin, cos, tan, pi
 from vector import v2, v3
 from context import Context
 
-from imgui.core import slider_float
+from imgui.core import slider_float, checkbox, button
 
-simDataType = float | v2 | v3
-class Sim:
-    def __init__(self, t0: float, q0: tuple[simDataType, ...], d_q0: tuple, d2_q0: tuple):
+from typing import Type, cast, Generic, TypeVar
+
+T = TypeVar("T", float, v2, v3)
+class Sim(Generic[T]):
+    def __init__(self, type_: Type[T], t0: float, q0: tuple[T, ...], d_q0: tuple[T, ...], d2_q0: tuple[T, ...]):
+        self.type_ = type_
         # current values
         self.t = t0
-        self.q: tuple = q0
-        self.d_q: tuple = d_q0
-        self.d2_q: tuple = d2_q0
+        self.q = q0
+        self.d_q = d_q0
+        self.d2_q = d2_q0
         # history variables
         self.h_T = [t0]
         self.h_Q = [q0]
@@ -43,37 +46,49 @@ class Sim:
         setattr(self, name, v)
         return c
     
+    def autocheckbox(self, name: str) -> bool:
+        c, v = checkbox(name, getattr(self, name))
+        setattr(self, name, v)
+        return c
+    
+    def button(self, name: str) -> bool:
+        return button(name)
+    
     def defaultSliders(self, names: list[str], ranges: list[tuple[float, float]]) -> bool:
+        if not self.type_ is float:
+            return False
+        
         n = len(self.q)
         changed = [False for _ in range(n * 2)]
-        new_h_Q = [0 for _ in range(n)]
-        new_h_dQ = [0 for _ in range(n)]
+        new_h_Q = [0.0 for _ in range(n)]
+        new_h_dQ = [0.0 for _ in range(n)]
         for i in range(n):
             changed[i * 2], new_h_Q[i] = slider_float(names[i * 2], self.h_Q[0][i], ranges[i * 2][0], ranges[i * 2][1])
             changed[i * 2 + 1], new_h_dQ[i] = slider_float(names[i * 2 + 1], self.h_dQ[0][i], ranges[i * 2 + 1][0], ranges[i * 2 + 1][1])
-        self.h_Q[0] = tuple(new_h_Q)
-        self.h_dQ[0] = tuple(new_h_dQ)
+        self.h_Q[0] = cast(tuple[T], tuple(new_h_Q))
+        self.h_dQ[0] = cast(tuple[T], tuple(new_h_dQ))
         return any(changed)
         
     def guiEditables(self) -> bool:
         raise NotImplementedError()
     
-    def update(self, dt):
+    def update(self, dt: float, recordTimestep: bool):
         self.setd2s()
         self.d_q = tuple(map(lambda x: x[0] + x[1] * dt, zip(self.d_q, self.d2_q)))
         self.q = tuple(map(lambda x: x[0] + x[1] * dt, zip(self.q, self.d_q)))
 
         self.t += dt
 
-        self.h_T.append(self.t)
-        self.h_Q.append(self.q)
-        self.h_dQ.append(self.d_q)
-        self.h_d2Q.append(self.d2_q)
+        if recordTimestep:
+            self.h_T.append(self.t)
+            self.h_Q.append(self.q)
+            self.h_dQ.append(self.d_q)
+            self.h_d2Q.append(self.d2_q)
 
-    def run(self, duration, dt):
+    def run(self, duration: float, dt: float):
         t0 = self.t
         while self.t - t0 < duration:
-            self.update(dt)
+            self.update(dt, True)
 
 g = 9.81
 # q = (x, theta)
@@ -84,8 +99,8 @@ class pendulum(Sim):
         self.l = 0.5
 
     def setd2s(self):
-        theta = self.q[1]
-        d_theta = self.d_q[1]
+        theta = cast(float, self.q[1])
+        d_theta = cast(float, self.d_q[1])
         tdd = (self.m * self.l * d_theta ** 2 * sin(theta) * cos(theta) - (self.m + self.M) * g * sin(theta)) / (self.m * self.l * cos(theta) ** 2 - (self.m + self.M) * self.l)
         self.d2_q = (
             g * tan(theta) - self.l * tdd / cos(theta),
@@ -116,8 +131,8 @@ class pendulum2(Sim):
         self.l2 = 0.9
 
     def setd2s(self):
-        the1, the2 = self.q
-        dthe1, dthe2 = self.d_q
+        the1, the2 = cast(tuple[float, float], self.q)
+        dthe1, dthe2 = cast(tuple[float, float], self.d_q)
         sd = sin(the1 - the2)
         cd = cos(the1 - the2)
         mm = self.m1 + self.m2

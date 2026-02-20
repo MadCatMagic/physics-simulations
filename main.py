@@ -10,11 +10,11 @@ import simulation
 from vector import v2, v3
 from math import pi
 
-SCREENSIZE = (1200, 800)
+SCREENSIZE = (800, 600)
 FPS = 60
 BG_COLOUR = (30, 30, 30)
 
-def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2(0, 0), worldDiameter: float = 5, timestep: float = 1 / 60):
+def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2(0, 0), worldDiameter: float = 5, timestep: float = 1 / 60, itersPerTimestep: int = 1):
 
     # initialisation
     pg.init()
@@ -51,7 +51,10 @@ def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2
         # do imgui stuff
         imgui.new_frame()
         imgui.begin("Test window")
-        imgui.text("heehheee")
+        changedSize, newSize = imgui.slider_float("display scale", ctx.size, 1, 10)
+        if changedSize:
+            ctx.setSize(newSize)
+        imgui.text("settings")
         changed = sim.guiEditables()
         imgui.end()
 
@@ -62,7 +65,8 @@ def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2
 
         # do pygame stuff
         renderer.pygameSurface.fill(BG_COLOUR)
-        sim.update(timestep)
+        for iter in range(itersPerTimestep):
+            sim.update(timestep / itersPerTimestep, iter == itersPerTimestep - 1)
         sim.displayFrame(ctx, sim.h_Q[i], sim.h_dQ[i], sim.h_d2Q[i])
 
         renderer.TransferToOpenglTexture()
@@ -77,4 +81,4 @@ def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2
     sys.exit()
 
 if __name__ == "__main__":
-    simulate(simulation.pendulum(0, (0, 0.4), (0, 0), (0, 0)))
+    simulate(simulation.pendulum(float, 0, (0, 0.4), (0, 0), (0, 0)))

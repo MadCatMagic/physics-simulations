@@ -27,7 +27,7 @@ class v2:
     def length(self) -> float:
         return math.hypot(self.x, self.y)
 
-    def normalize(self):
+    def normalise(self):
         l = self.length()
         return v2(self.x / l, self.y / l) if l != 0 else v2()
 

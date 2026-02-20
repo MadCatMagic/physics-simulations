@@ -3,14 +3,14 @@ from context import Context
 from math import sin, cos, tan, pi
 from vector import v2
 
-G = 6.67e-11
-au = 1.5e11
-yr = 365.25 * 24 * 3600
+G = 1
+au = 1
+yr = 1
 
 # q = (r, theta)
 class planet(Sim):
     def setParams(self):
-        self.M = 1.99e30
+        self.M = 1
 
     def setd2s(self):
         self.d2_q = (
@@ -19,8 +19,8 @@ class planet(Sim):
         )
 
     def guiEditables(self) -> bool:
-        dsedited = self.defaultSliders(["r_0", "dr_0", "theta_0", "omega_0"], [(0.0, 2.0 * au), (-1.0e5, 1.0e5), (-pi, pi), (-20.0 / yr, 20.0 / yr)])
-        M = self.autoslider("M", 0.0, 1.0e31)
+        dsedited = self.defaultSliders(["r_0", "dr_0", "theta_0", "omega_0"], [(0.0, 2.0 * au), (-10.0, 10.0), (-pi, pi), (-20.0 / yr, 20.0 / yr)])
+        M = self.autoslider("M", 0.0, 10.0)
         return any((dsedited, M))
 
     def displayFrame(self, ctx: Context, q, d_q, d2_q):
@@ -34,4 +34,4 @@ class planet(Sim):
 
 if __name__ == "__main__":
     import main
-    main.simulate(planet(0, (au, 0.0), (1e4, (G * 1.99e30 / (1.5e11 ** 3)) ** 0.5 * 1.3), (0, 0)), "Planet", v2(), 5 * au, 10000)
+    main.simulate(planet(float, 0, (au, 0.0), (1, 0), (0, 0)), "Planet", v2(), 5 * au)

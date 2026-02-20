@@ -6,11 +6,15 @@ import pygame.gfxdraw as gfxdraw
 class Context:
     def __init__(self, screen: pg.Surface, screenSize: v2, centre: v2, size: float):
         self.screen = screen
-        self.centre = v2(centre.x - size * 0.5, centre.y - size * screenSize.y / screenSize.x * 0.5)
-        self.size = size
+        self.worldCentre = centre
         self.screenSize = screenSize
+        self.setSize(size)
 
         self.col: tuple[int, int, int] = (255, 255, 255)
+
+    def setSize(self, size: float):
+        self.size = size
+        self.centre = v2(self.worldCentre.x - size * 0.5, self.worldCentre.y - size * self.screenSize.y / self.screenSize.x * 0.5)
 
     def transform(self, p: v2) -> tuple[int, int]:
         return (
