@@ -9,18 +9,18 @@ from typing import Type, cast, Generic, TypeVar
 
 T = TypeVar("T", float, v2, v3)
 class Sim(Generic[T]):
-    def __init__(self, type_: Type[T], t0: float, q0: tuple[T, ...], d_q0: tuple[T, ...], d2_q0: tuple[T, ...]):
+    def __init__(self, type_: Type[T], t0: float, q0: tuple[T, ...], d_q0: tuple[T, ...]):
         self.type_ = type_
         # current values
         self.t = t0
         self.q = q0
         self.d_q = d_q0
-        self.d2_q = d2_q0
+        self.d2_q = tuple(type_() for _ in q0)
         # history variables
         self.h_T = [t0]
         self.h_Q = [q0]
         self.h_dQ = [d_q0]
-        self.h_d2Q = [d2_q0]
+        self.h_d2Q = [self.d2_q]
 
     def resetSim(self):
         self.t = self.h_T[0]

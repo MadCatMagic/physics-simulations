@@ -68,6 +68,5 @@ if __name__ == "__main__": # v^2/r=GMm/r^2
     vel = 1 / (3 * r0 ** 0.5)
     main.simulate(planet(v2, 0, 
                          (v2(r0 * 2, 0), v2(-r0, 0)), 
-                         (v2(0, vel * 2), v2(0, -vel)), 
-                         (v2(), v2())
+                         (v2(0, vel * 2), v2(0, -vel))
         ), "2-body system", v2(), 8, 0.03, 6)

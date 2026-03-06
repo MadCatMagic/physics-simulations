@@ -34,4 +34,4 @@ class planet(Sim):
 
 if __name__ == "__main__":
     import main
-    main.simulate(planet(float, 0, (au, 0.0), (1, 0), (0, 0)), "Planet", v2(), 5 * au)
+    main.simulate(planet(float, 0, (au, 0.0), (1, 0)), "Planet", v2(), 5 * au)

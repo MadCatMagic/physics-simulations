@@ -88,6 +88,6 @@ if __name__ == "__main__":
     s = "\n".join(f"{i}: {option}" for i, option in enumerate(options))
     option = int(input(f"enter option:\n{s}\n"))
     if option == 0:
-        main.simulate(pendulum(0, (0, 0.6), (0, -0.1), (0, 0)), "Pendulums")
+        main.simulate(pendulum(float, 0, (0, 0.6), (0, -0.1)), "Pendulums")
     elif option == 1:
-        main.simulate(pendulum2(0, (0.3, 0.6), (0, -0.1), (0, 0)), "Pendulums")
+        main.simulate(pendulum2(float, 0, (0.3, 0.6), (0, -0.1)), "Pendulums")
