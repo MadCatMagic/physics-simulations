@@ -46,6 +46,12 @@ def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2
             if event.type == pg.QUIT:
                 running = False
             renderer.impl.process_event(event)
+            if renderer.impl.io.want_capture_mouse or renderer.impl.io.want_capture_keyboard:
+                continue
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pos = pg.mouse.get_pos()
+                sim.onClick(ctx.inverseTransform(pos), {1: 0, 3: 1}[event.button])
+        
         renderer.impl.process_inputs()
 
         # do imgui stuff
@@ -81,4 +87,4 @@ def simulate(sim: simulation.Sim, caption: str = "Physics", worldCentre: v2 = v2
     sys.exit()
 
 if __name__ == "__main__":
-    simulate(simulation.pendulum(float, 0, (0, 0.4), (0, 0), (0, 0)))
+    simulate(simulation.pendulum(float, 0, (0, 0.4), (0, 0)))

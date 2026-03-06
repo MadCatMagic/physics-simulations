@@ -19,7 +19,13 @@ class Context:
     def transform(self, p: v2) -> tuple[int, int]:
         return (
             int((p.x - self.centre.x) / self.size * self.screenSize.x), 
-            int(self.screenSize.y - (p.y - self.centre.y) / self.size * self.screenSize.x)
+            int(self.screenSize.y - (p.y - self.centre.y) / self.size * self.screenSize.y)
+        )
+    
+    def inverseTransform(self, p: tuple[int, int]) -> v2:
+        return v2(
+            p[0] / self.screenSize.x * self.size + self.centre.x, 
+            (self.screenSize.y - p[1]) / self.screenSize.y * self.size + self.centre.y
         )
 
     def line(self, p1: v2, p2: v2):

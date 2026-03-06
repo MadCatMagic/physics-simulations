@@ -72,6 +72,13 @@ class Sim(Generic[T]):
     def guiEditables(self) -> bool:
         raise NotImplementedError()
     
+    # button = 0: left click
+    # button = 1: right click
+    # pos is in world space
+    def onClick(self, pos: v2, button: int):
+        # not super important so not bothering making fully virtual
+        pass
+    
     def update(self, dt: float, recordTimestep: bool):
         self.setd2s()
         self.d_q = tuple(map(lambda x: x[0] + x[1] * dt, zip(self.d_q, self.d2_q)))
